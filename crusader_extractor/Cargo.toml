@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 crusader_lib = { version = "0.1.0", path = "../crusader_lib" }
+rusqlite = { version = "0.29.0", features = ["bundled"] }
