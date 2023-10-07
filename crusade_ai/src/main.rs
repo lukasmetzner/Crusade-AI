@@ -1,6 +1,6 @@
 use std::{thread::sleep, time::Duration};
 
-use crusade_ai_lib::Crusader;
+use crusader_lib::Crusader;
 
 fn main() {
     let cursader = Crusader::new("Stronghold".to_string()).unwrap();

@@ -1,5 +1,5 @@
 [workspace]
 members = [
   "crusade_ai",
-  "crusade_ai_lib",
+  "crusader_lib",
 ]
