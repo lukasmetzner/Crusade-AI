@@ -45,7 +45,7 @@ impl std::fmt::Display for Crusader {
 }
 
 impl Crusader {
-    pub fn new(process_name: String) -> Result<Crusader, Error> {
+    pub fn new() -> Result<Crusader, Error> {
         let s = System::new_all();
         let pid = s
             .processes()
@@ -53,7 +53,7 @@ impl Crusader {
             .filter(|f| {
                 f.1.name()
                     .to_lowercase()
-                    .contains(process_name.to_lowercase().as_str())
+                    .contains("Stronghold".to_lowercase().as_str())
             })
             .last()
             .unwrap()
