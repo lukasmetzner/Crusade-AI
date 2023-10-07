@@ -1,5 +1,4 @@
-use std::thread::sleep;
-use std::{ffi::c_void, time::Duration};
+use std::ffi::c_void;
 use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 use windows::Win32::Foundation::HANDLE;
 use windows::{
@@ -177,13 +176,5 @@ impl Crusader {
             );
         }
         Ok(())
-    }
-}
-
-fn main() {
-    let cursader = Crusader::new("Stronghold".to_string()).unwrap();
-    loop {
-        println!("{}", cursader);
-        sleep(Duration::from_millis(500));
     }
 }
