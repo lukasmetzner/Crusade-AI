@@ -4,6 +4,10 @@
 use rusqlite::{Connection, params};
 use serde::Serialize;
 
+use std::thread;
+
+use crusader_lib::extract_data;
+
 #[derive(Debug, Default, Serialize)]
 struct Resources {
     tick: u32,
@@ -41,8 +45,12 @@ fn get_resources() -> Resources {
 }
 
 fn main() {
+    let handle = thread::spawn(|| {
+        extract_data();
+    });
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_resources])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    handle.join().unwrap();
 }

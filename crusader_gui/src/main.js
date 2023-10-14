@@ -31,13 +31,13 @@ function buildGraph() {
       .filter(label => label !== "tick")
       .map((label, index) => {
         return {
-            label: [resourcesData.tick],
+            label: label,
             data: [resourcesData[label]],
             borderColor: colors[index],
             fill: false
         };
       });
-  
+
     const chartData = {
         labels: [0],
         datasets: datasets
@@ -58,8 +58,6 @@ function updateGraph() {
           dataset.data.push(Object.values(resourcesData)[index]);
       }
   });
-    console.log(graph.data.labels);
-    console.log(graph.data.datasets);
     graph.update();
   });
 }
