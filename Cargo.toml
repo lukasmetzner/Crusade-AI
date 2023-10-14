@@ -1,5 +1,6 @@
 [workspace]
 members = [
   "crusader_extractor",
+  "crusader_gui/src-tauri",
   "crusader_lib",
 ]

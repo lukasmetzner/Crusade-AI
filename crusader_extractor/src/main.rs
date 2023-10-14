@@ -1,7 +1,7 @@
 use std::{thread::sleep, time::Duration};
 
 use crusader_lib::Crusader;
-use rusqlite::{Connection, Error, Result};
+use rusqlite::Connection;
 
 #[derive(Debug)]
 struct Resources {
@@ -39,7 +39,7 @@ fn create_table(conn: &Connection) -> () {
 }
 
 fn main() {
-    let conn = Connection::open("./db.db").unwrap();
+    let conn = Connection::open("C:\\Users\\lukas\\crusade-ai\\db.db").unwrap();
     create_table(&conn);
 
     let cursader = Crusader::new().unwrap();
