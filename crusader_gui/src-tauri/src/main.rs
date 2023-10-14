@@ -25,7 +25,7 @@ struct Resources {
 
 #[tauri::command]
 fn get_resources() -> Resources {
-    let conn = Connection::open("C:\\Users\\lukas\\crusade-ai\\db.db").unwrap();
+    let conn = Connection::open("./db.db").unwrap();
     let mut stmt = conn.prepare("SELECT * FROM resources ORDER BY tick DESC LIMIT 1").unwrap();
     stmt.query_row(params![], |row| {
         Ok(Resources {

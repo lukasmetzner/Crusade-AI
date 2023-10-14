@@ -186,7 +186,7 @@ fn create_table(conn: &Connection) -> () {
 }
 
 pub fn extract_data() {
-    let conn = Connection::open("C:\\Users\\lukas\\crusade-ai\\db.db").unwrap();
+    let conn = Connection::open("./db.db").unwrap();
     create_table(&conn);
 
     let cursader = Crusader::new().unwrap();
