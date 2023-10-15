@@ -150,22 +150,8 @@ impl Crusader {
     }
 }
 
-#[derive(Debug)]
-struct Resources {
-    tick: u32,
-    gold: u32,
-    wood: u32,
-    stone: u32,
-    iron: u32,
-    hops: u32,
-    pitch: u32,
-    ale: u32,
-    flour: u32,
-    peasants: u32,
-    max_peasants: u32,
-}
-
-fn create_table(conn: &Connection) -> () {
+fn setup_sqlite() -> Connection {
+    let conn = Connection::open("./db.db").expect("Could not open sqlite database!");
     conn.execute(
         "CREATE TABLE IF NOT EXISTS resources (
             tick PRIMARY KEY,
@@ -182,28 +168,14 @@ fn create_table(conn: &Connection) -> () {
         )",
         (),
     )
-    .unwrap();
+    .expect("Could not create table resources!");
+    conn
 }
 
 pub fn extract_data() {
-    let conn = Connection::open("./db.db").unwrap();
-    create_table(&conn);
-
-    let cursader = Crusader::new().unwrap();
+    let conn = setup_sqlite();
+    let cursader = Crusader::new().expect("Could not connect to Stronghold Crusader!");
     loop {
-        let resources = Resources {
-            tick: cursader.get_tick().unwrap_or_default(),
-            gold: cursader.get_gold().unwrap_or_default(),
-            wood: cursader.get_wood().unwrap_or_default(),
-            iron: cursader.get_iron().unwrap_or_default(),
-            hops: cursader.get_hops().unwrap_or_default(),
-            ale: cursader.get_ale().unwrap_or_default(),
-            stone: cursader.get_stone().unwrap_or_default(),
-            flour: cursader.get_flour().unwrap_or_default(),
-            pitch: cursader.get_pitch().unwrap_or_default(),
-            peasants: cursader.get_peasant().unwrap_or_default(),
-            max_peasants: cursader.get_max_peasants().unwrap_or_default(),
-        };
         let result = conn.execute(
             "INSERT INTO resources (
                 tick, 
@@ -220,26 +192,23 @@ pub fn extract_data() {
             ) 
             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11);",
             (
-                &resources.tick,
-                &resources.gold,
-                &resources.wood,
-                &resources.stone,
-                &resources.iron,
-                &resources.hops,
-                &resources.pitch,
-                &resources.ale,
-                &resources.flour,
-                &resources.peasants,
-                &resources.max_peasants,
+                cursader.get_tick().unwrap_or_default(),
+                cursader.get_gold().unwrap_or_default(),
+                cursader.get_wood().unwrap_or_default(),
+                cursader.get_stone().unwrap_or_default(),
+                cursader.get_iron().unwrap_or_default(),
+                cursader.get_hops().unwrap_or_default(),
+                cursader.get_pitch().unwrap_or_default(),
+                cursader.get_ale().unwrap_or_default(),
+                cursader.get_flour().unwrap_or_default(),
+                cursader.get_peasant().unwrap_or_default(),
+                cursader.get_max_peasants().unwrap_or_default(),
             ),
         );
         match result {
             Ok(_) => (),
-            Err(_) => {
-                continue;
-            }
+            Err(_) => continue,
         }
-        println!("{}", cursader);
         sleep(Duration::from_millis(2000));
     }
 }

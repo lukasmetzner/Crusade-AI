@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use rusqlite::{Connection, params};
+use rusqlite::{params, Connection};
 use serde::Serialize;
 
 use std::thread;
@@ -24,10 +24,12 @@ struct Resources {
 }
 
 #[tauri::command]
-fn get_resources() -> Resources {
+fn get_resources() -> Option<Vec<Resources>> {
     let conn = Connection::open("./db.db").unwrap();
-    let mut stmt = conn.prepare("SELECT * FROM resources ORDER BY tick DESC LIMIT 1").unwrap();
-    stmt.query_row(params![], |row| {
+    let mut stmt = conn
+        .prepare("SELECT * FROM resources ORDER BY tick DESC LIMIT 50")
+        .unwrap();
+    let resources_iter = stmt.query_map(params![], |row| {
         Ok(Resources {
             tick: row.get(0)?,
             gold: row.get(1)?,
@@ -41,7 +43,11 @@ fn get_resources() -> Resources {
             peasants: row.get(9)?,
             max_peasants: row.get(10)?,
         })
-    }).unwrap()
+    });
+    match resources_iter {
+        Ok(it) => Some(it.flatten().collect::<Vec<Resources>>()),
+        Err(_) => None,
+    }
 }
 
 fn main() {

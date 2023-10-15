@@ -22,42 +22,59 @@ async function getResources() {
   return await invoke("get_resources");
 }
 
+function transformData(resourcesData) {
+  // Extracting x-axis labels using the 'tick' values
+const labels = resourcesData.map(obj => obj.tick).reverse();
+
+// Remove 'tick' from the keys
+const keys = Object.keys(resourcesData[0]).filter(key => key !== 'tick');
+
+const datasets = keys.map((key, index) => ({
+    label: key,
+    data: resourcesData.map(obj => obj[key]).reverse(),
+    fill: false,
+    borderColor: colors[index],
+    tension: 0.1
+}));
+  return [labels, datasets];
+}
+
 function buildGraph() {
-  const ctx = document.getElementById('myChart');
+  let ctx = document.getElementById('myChart');
 
   getResources().then(resourcesData => {
-    const labels = Object.keys(resourcesData);
-    const datasets = labels
-      .filter(label => label !== "tick")
-      .map((label, index) => {
-        return {
-            label: label,
-            data: [resourcesData[label]],
-            borderColor: colors[index],
-            fill: false
-        };
-      });
+    const [labels, datasets] = transformData(resourcesData);
 
-    const chartData = {
-        labels: [0],
-        datasets: datasets
-    };
-  
     graph = new Chart(ctx, {
       type: 'line',
-      data: chartData,
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        scales: {
+          x: {
+            beginAtZero: true
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
     });
+  })
+  .catch((err) => { 
+    console.log("Could not build graph!");
+    console.log(err);
+    return; 
   });
 }
 
 function updateGraph() {
   getResources().then(resourcesData => {
-    graph.data.labels.push(resourcesData.tick);
-    graph.data.datasets.forEach((dataset, index) => {
-      if (Object.keys(resourcesData)[index] !== "tick") {
-          dataset.data.push(Object.values(resourcesData)[index]);
-      }
-  });
+    const [keys, datasets] = transformData(resourcesData);
+    graph.data.labels = keys;
+    graph.data.datasets = datasets;
     graph.update();
   });
 }
