@@ -24,18 +24,18 @@ async function getResources() {
 
 function transformData(resourcesData) {
   // Extracting x-axis labels using the 'tick' values
-const labels = resourcesData.map(obj => obj.tick).reverse();
+  const labels = resourcesData.map(obj => obj.tick).reverse();
 
-// Remove 'tick' from the keys
-const keys = Object.keys(resourcesData[0]).filter(key => key !== 'tick');
+  // Remove 'tick' from the keys
+  const keys = Object.keys(resourcesData[0]).filter(key => key !== 'tick');
 
-const datasets = keys.map((key, index) => ({
+  const datasets = keys.map((key, index) => ({
     label: key,
     data: resourcesData.map(obj => obj[key]).reverse(),
     fill: false,
     borderColor: colors[index],
     tension: 0.1
-}));
+  }));
   return [labels, datasets];
 }
 
@@ -52,22 +52,36 @@ function buildGraph() {
         datasets: datasets
       },
       options: {
+        animation: {
+          duration: 0 // Disables the initial animation
+        },
+        hover: {
+          animationDuration: 0 // Disables the hover pop-up animation
+        },
         scales: {
           x: {
             beginAtZero: true
           },
           y: {
-            beginAtZero: true
+            type: 'logarithmic',
+            beginAtZero: true,
+            ticks: {
+              callback: function (value, index, values) {
+                if (value === 10 || value === 100 || value === 1000 || value === 10000) {
+                  return value;
+                }
+              }
+            }
           }
         }
       }
     });
   })
-  .catch((err) => { 
-    console.log("Could not build graph!");
-    console.log(err);
-    return; 
-  });
+    .catch((err) => {
+      console.log("Could not build graph!");
+      console.log(err);
+      return;
+    });
 }
 
 function updateGraph() {
